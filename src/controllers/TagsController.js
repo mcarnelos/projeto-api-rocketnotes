@@ -7,6 +7,7 @@ class TagsController {
     //fazendo busca na tabela tags onde seja igual ao user_id
     const tags = await knex("tags")
     .where({ user_id })
+    .groupBy("name") //agrupa pelo nome e evita que apareçam nomes repetidos
 
     return response.json(tags)
   }

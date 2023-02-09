@@ -7,7 +7,7 @@ class NotesController {
     const user_id = request.user.id
 
     //criando o insert
-    const note_id = await knex("notes").insert({
+    const [note_id] = await knex("notes").insert({
       title,
       description,
       user_id
@@ -86,6 +86,7 @@ class NotesController {
         .whereLike("notes.title", `%${title}%`)
         .whereIn("name", filterTags)
         .innerJoin("notes", "notes.id", "tags.note_id") //tabela, coluna da tabela, coluna da outra tabela
+        .groupBy("notes.id") //não traz notas repetidas
         .orderBy("notes.title")
     } else {
 
