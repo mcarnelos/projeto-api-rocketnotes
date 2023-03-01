@@ -37,6 +37,10 @@ app.use((error, request, response, next) => {
   })
 })
 
+app.get("/", (req, res) => {
+  return res.json({"message": "OK"});
+})
+
 const PORT = process.env.PORT || 3333 //define a porta que a api vai utilizar
 app.listen(PORT, () => console.log(`Server is running on Port ${PORT}`)) //fica aguardando e quando a api iniciar lança a msg
 
