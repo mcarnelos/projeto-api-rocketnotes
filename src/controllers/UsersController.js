@@ -1,35 +1,22 @@
 //importando hash que faz a criptografia
 const { hash, compare } = require("bcryptjs")
-
 //importando AppError
 const AppError = require("../utils/AppError")
 
+const UserRepository = require("../repositories/UserRepository")
 //importando sqlite
 const sqliteConnection = require("../database/sqlite")
+const UserCreateService = require("../services/UserCreateService")
 
 //criando os métodos 
 class UsersController {
   async create(request, response) {
     const { name, email, password } = request.body //pega nome, email e senha
 
-    const database = await sqliteConnection() //faz a conexão com o BD
-    const checkUserExists = await database.get(
-      "SELECT * FROM users WHERE email = (?)", [email]
-      ) //verifica se o email já existe
+    const userRepository = new UserRepository()
+    const userCreateService = new UserCreateService(userRepository)
 
-    //caso ja exista o email
-    if(checkUserExists) {
-      throw new AppError("Este e-mail já está em uso.")      
-    }
-
-    //criptografa a senha 
-    const hashedPassword = await hash(password, 8)
-
-    //executa o insert
-    await database.run(
-      "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
-      [name, email, hashedPassword]
-    )
+    await userCreateService.execute({ name, email, password })
 
     //caso não exista retorna 201 e um json vazio
     return response.status(201).json()
